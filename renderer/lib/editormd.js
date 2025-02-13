@@ -56,7 +56,7 @@
     
     var editormd         = function (id, options) {
         return new editormd.fn.init(id, options);
-    };
+    },_that;
     
     editormd.title        = editormd.$name = "Editor.md";
     editormd.version      = "1.5.0";
@@ -285,6 +285,17 @@
                 close  : "关闭"
             },
             dialog : {
+                create : {
+                    title    : "新建文档",
+                    name     : "文档标题",
+                    key      : "ID(字母数字)",
+                    nameEmpty : "错误：请填写标题。",
+                    keyEmpty : "错误：请填写字母数字组成的ID。"
+                },
+                open : {
+                    title    : "打开文档",
+                    key     : "选择文档"
+                },
                 link : {
                     title    : "添加链接",
                     url      : "链接地址",
@@ -303,10 +314,10 @@
                 },
                 image : {
                     title    : "添加图片",
-                    url      : "图片地址",
+                    url      : "选择图片",
                     link     : "图片链接",
                     alt      : "图片描述",
-                    uploadButton     : "本地上传",
+                    //uploadButton     : "本地上传",
                     imageURLEmpty    : "错误：图片地址不能为空。",
                     uploadFileEmpty  : "错误：上传的图片不能为空。",
                     formatNotAllowed : "错误：只允许上传图片文件，允许上传的图片文件格式有："
@@ -1245,6 +1256,7 @@
         setToolbarHandler : function() {
             var _this               = this;
             var settings            = this.settings;
+            _that=this;
             
             if (!settings.toolbar || settings.readOnly) {
                 return this;
@@ -2702,7 +2714,7 @@
          * @returns {editormd}           返回editormd的实例对象
          */
         
-        executePlugin : function(name, path) {
+        executePlugin : function(name, path, args) {
             
             var _this    = this;
             var cm       = this.cm;
@@ -2719,7 +2731,7 @@
                     return this;
                 }
                 
-                this[name](cm);
+                this[name](cm,args);
                 
                 return this;
             }
@@ -2728,12 +2740,12 @@
             {
                 editormd.loadPlugin(path, function() {
                     editormd.loadPlugins[name] = _this[name];
-                    _this[name](cm);
+                    _this[name](cm,args);
                 });
             }
             else
             {
-                $.proxy(editormd.loadPlugins[name], this)(cm);
+                $.proxy(editormd.loadPlugins[name], this)(cm,args);
             }
             
             return this;
@@ -3112,9 +3124,21 @@
 
             cm.replaceSelection("\r\n[========]\r\n");
         },
+        
+        doc: function(msg){
+            if(typeof msg=='string')
+                _that.executePlugin("docCreateDialog", "doc-dialog/create",msg);
+            else
+                _that.executePlugin("docOpenDialog", "doc-dialog/open",msg);
+        },
 
-        image : function() {
-            this.executePlugin("imageDialog", "image-dialog/image-dialog");
+        image : function(imgs) {
+            if(imgs.path && imgs.list && typeof imgs.list.length!='undefined'){
+                if(imgs.list.length)
+                    _that.executePlugin("imageDialog", "image-dialog/image-dialog",imgs.list);
+                else
+                    alert(`Please save the image to the following path first ${imgs.path.replace(/\\/g,'/').replace(/\/\//g,'/')}`);
+            }
         },
         
         code : function() {
