@@ -15,7 +15,7 @@
 
 		var pluginName   = "image-dialog";
 
-		exports.fn.imageDialog = function() {
+		exports.fn.imageDialog = function(_o,arg) {
 
             var _this       = this;
             var cm          = this.cm;
@@ -24,7 +24,7 @@
             var settings    = this.settings;
             var cursor      = cm.getCursor();
             var selection   = cm.getSelection();
-            var imageLang   = lang.dialog.image;
+            var objLang     = lang.dialog.image;
             var classPrefix = this.classPrefix;
             var iframeName  = classPrefix + "image-iframe";
 			var dialogName  = classPrefix + pluginName, dialog;
@@ -38,8 +38,13 @@
 
             if (editor.find("." + dialogName).length < 1)
             {
-                var guid   = (new Date).getTime();
+                var guid   = (new Date).getTime(),ops='';
                 var action = settings.imageUploadURL + (settings.imageUploadURL.indexOf("?") >= 0 ? "&" : "?") + "guid=" + guid;
+
+                if(typeof arg=='object')
+                    arg.map(i=>{
+                        ops+=`<option>${i}</option>`;
+                    })
 
                 if (settings.crossDomainUpload)
                 {
@@ -48,26 +53,26 @@
 
                 var dialogContent = ( (settings.imageUpload) ? "<form action=\"" + action +"\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">" ) +
                                         ( (settings.imageUpload) ? "<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" guid=\"" + guid + "\"></iframe>" : "" ) +
-                                        "<label>" + imageLang.url + "</label>" +
-                                        "<input type=\"text\" data-url />" + (function(){
+                                        "<label>" + objLang.url + "</label>" +
+                                        '<select data-url style="width: 264px;padding: 8px;">'+ops+"</select>" + (function(){
                                             return (settings.imageUpload) ? "<div class=\"" + classPrefix + "file-input\">" +
                                                                                 "<input type=\"file\" name=\"" + classPrefix + "image-file\" accept=\"image/*\" />" +
-                                                                                "<input type=\"submit\" value=\"" + imageLang.uploadButton + "\" />" +
+                                                                                "<input type=\"submit\" value=\"" + objLang.uploadButton + "\" />" +
                                                                             "</div>" : "";
                                         })() +
                                         "<br/>" +
-                                        "<label>" + imageLang.alt + "</label>" +
+                                        "<label>" + objLang.alt + "</label>" +
                                         "<input type=\"text\" value=\"" + selection + "\" data-alt />" +
                                         "<br/>" +
-                                        "<label>" + imageLang.link + "</label>" +
+                                        "<label>" + objLang.link + "</label>" +
                                         "<input type=\"text\" value=\"http://\" data-link />" +
                                         "<br/>" +
                                     ( (settings.imageUpload) ? "</form>" : "</div>");
 
-                //var imageFooterHTML = "<button class=\"" + classPrefix + "btn " + classPrefix + "image-manager-btn\" style=\"float:left;\">" + imageLang.managerButton + "</button>";
+                //var imageFooterHTML = "<button class=\"" + classPrefix + "btn " + classPrefix + "image-manager-btn\" style=\"float:left;\">" + objLang.managerButton + "</button>";
 
                 dialog = this.createDialog({
-                    title      : imageLang.title,
+                    title      : objLang.title,
                     width      : (settings.imageUpload) ? 465 : 380,
                     height     : 254,
                     name       : dialogName,
@@ -87,11 +92,11 @@
 
                             if (url === "")
                             {
-                                alert(imageLang.imageURLEmpty);
+                                alert(objLang.imageURLEmpty);
                                 return false;
                             }
 
-							var altAttr = (alt !== "") ? " \"" + alt + "\"" : "";
+                            var altAttr = (alt !== "") ? " \"" + alt + "\"" : "";
 
                             if (link === "" || link === "http://")
                             {
@@ -107,7 +112,6 @@
                             }
 
                             this.hide().lockScreen(false).hideMask();
-
                             return false;
                         }],
 
@@ -133,14 +137,14 @@
 
 					if (fileName === "")
 					{
-						alert(imageLang.uploadFileEmpty);
+						alert(objLang.uploadFileEmpty);
 
                         return false;
 					}
 
                     if (!isImage.test(fileName))
 					{
-						alert(imageLang.formatNotAllowed + settings.imageFormats.join(", "));
+						alert(objLang.formatNotAllowed + settings.imageFormats.join(", "));
 
                         return false;
 					}

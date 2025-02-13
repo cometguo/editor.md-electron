@@ -30,7 +30,7 @@ const menu = {
 					file.importMSWord(mainWindow);
 				}
 			},
-			{
+			/*{
 				type: 'separator'
 			},
 			{
@@ -46,7 +46,7 @@ const menu = {
 				click: () => {
 					file.saveAs(mainWindow);
 				}
-			},
+			},*/
 			{
 				type: 'separator'
 			},

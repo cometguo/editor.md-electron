@@ -1,4 +1,4 @@
-var fs = require("fs");
+var fs = require("fs"), image = require("imageinfo");
 const util = {
 	randNum:(n,m) => {
 		return Math.floor(Math.random()*(m-n+1)+n);
@@ -21,10 +21,16 @@ const util = {
 	readConfig:(name) => {
 		const configPath = global.basePath + "/config/" + name + ".cnf";
 		let config = {
-			fileName: '',
+            current: 'default',
+            currentName: 'Default',
+            docs:[
+            {
+			name: 'Default',
+			key: 'default',
 			theme:'default',
 			previewTheme: 'default',
 			editorTheme: "default"
+            }]
 		};
 		if(!fs.existsSync(configPath)){
 			util.saveConfig(name,config);
@@ -33,20 +39,61 @@ const util = {
 		}
 		return config;
 	},
+    curDir:()=>{
+        let _curDir=global.basePath+"/temp/docs/"+global.config.current;
+        if (!fs.existsSync(_curDir)) fs.mkdirSync(_curDir)
+        return _curDir;
+    },
+    delDoc:()=>{
+        let _curDir=global.basePath+"/temp/docs/"+global.config.current;
+        if (!fs.existsSync(_curDir)) fs.mkdirSync(_curDir)
+        return _curDir;
+    },
+    curDoc:()=>{
+        let curDocDir = util.curDir(),mdFile=curDocDir+"/local.md";
+        return mdFile;
+    },
 	saveConfig:(name,config) => {
 		const configPath = global.basePath+"/config/" + name + ".cnf";
 		fs.writeFileSync(configPath, JSON.stringify(config));
 	},
 	readLocal:() => {
-		const localPath = global.basePath+"/temp/local.md";
+		const localPath = util.curDoc();
 		let content = '';
 		if(fs.existsSync(localPath)){
 			content = fs.readFileSync(localPath,"utf8");
 		}
 		return content;
 	},
+    listImages:()=>{
+        let path = __dirname.replace('\\js','\\docs\\'+global.config.current), files,imageList=[];
+		if(!fs.existsSync(path)){
+			fs.mkdirSync(path)
+		}        
+        files = fs.readdirSync(path),files.forEach(function (itm, index) {
+            var stat = fs.statSync(path+'/' + itm);
+            if (!stat.isDirectory()) {
+                var ms = image(fs.readFileSync(path+'/' + itm));
+                ms.mimeType && (imageList.push('docs\\'+global.config.current+'\\'+itm))
+            }
+
+        })        
+        return {path:path, list:imageList};        
+    },
+    listDocs:()=>{
+        return global.config.docs;
+    },
 	saveLocal:(content) => {
-		fs.writeFileSync(global.basePath+"/temp/local.md", content);
+        let curDoc = util.curDoc();
+		fs.writeFileSync(curDoc, content);
+	},
+	readMd:() => {
+        let mdFile = util.curDoc();
+		let content = '';
+		if(fs.existsSync(mdFile)){
+			content = fs.readFileSync(mdFile,"utf8");
+		}
+		return content;
 	},
 	readFile:(fileName) => {
 		let content = '';
