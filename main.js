@@ -40,6 +40,7 @@ function serverReady(server) {
 		app,
 		BrowserWindow,
 		Menu,
+        shell,
 		ipcMain,
 		dialog
 	} = require('electron')
@@ -101,6 +102,16 @@ function serverReady(server) {
 		//	mainWindow.setTitle('Markdown Editor - *New File');
 		//}
         //}
+	});
+    
+    ipcMain.on('deepseek-chat', (event, arg) => {
+		/*const win2 = new BrowserWindow({ width: 800, height: 600,webPreferences: {
+				nodeIntegration: true,contextIsolation: false
+			} })
+        win2.loadURL('https://chat.deepseek.com')
+        //win2.loadURL('https://www.deepseek.com')
+        win2.webContents.openDevTools()*/
+        shell.openExternal('https://chat.deepseek.com');
 	});
 
 	ipcMain.on('drag-open', (event, arg) => {
