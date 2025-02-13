@@ -15,6 +15,7 @@
   "author": "GoDin",
   "license": "MIT",
   "dependencies": {
+    "imageinfo": "^1.0.4",
     "mammoth": "^1.4.7",
     "node-http-server": "8.1.2"
   },
@@ -25,11 +26,11 @@
   "build": {
     "appId": "com.wisedu.app",
     "productName": "Editor.md",
-    "directories":{
+    "directories": {
       "buildResources": "build",
       "output": "dist"
     },
-    "nsis":{
+    "nsis": {
       "oneClick": true,
       "perMachine": false,
       "allowElevation": true,
@@ -44,6 +45,8 @@
       "shortcutName": "Editor.md"
     },
     "asar": false,
-    "asarUnpack":["**/*.exe"]
+    "asarUnpack": [
+      "**/*.exe"
+    ]
   }
 }

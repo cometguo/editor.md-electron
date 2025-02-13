@@ -2,6 +2,11 @@
 
 **Editor.md-electron** : The open source markdown editor is based on Markdown.md & electron.
 
+### 升级0.1版特性
+- 支持图片导出pdf
+- 支持多文档编辑
+
+
 ### Features
 - Support Export to pdf.
 - Support Microsoft Word to markdown transform.

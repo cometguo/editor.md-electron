@@ -2,7 +2,7 @@
 //main.js
 const fs = require("fs")
 const tool = require('./renderer/js/tool');
-global.notSave = true;
+global.notSave = false;//true;
 global.wkhtmltopdf = __dirname + '/renderer/lib/bin/wkhtmltopdf';
 const util = require('./renderer/js/util');
 global.basePath = util.mkDefaultDir();
@@ -49,9 +49,9 @@ function serverReady(server) {
 	let mainWindow
 
 	ipcMain.on('editor-init', (event, arg) => {
-		const content = util.readFile(global.config.fileName);
+		const content = util.readMd();
 		const local = util.readLocal();
-		if (global.config.fileName) {
+		//if (global.config.fileName) {
 			if (local === content) {
 				event.returnValue = local;
 			} else {
@@ -69,26 +69,38 @@ function serverReady(server) {
 					}
 				});
 			}
-		} else {
-			event.returnValue = local;
-		}
+		//} else {
+		//	event.returnValue = local;
+		//}
 	});
+    
+	ipcMain.on('list-image', (event, arg) => {
+        event.returnValue = util.listImages();
+    })
 
 	ipcMain.on('save-local-md', (event, arg) => {
-		util.saveLocal(arg);
-		if (global.config.fileName) {
-			let content = util.readFile(global.config.fileName);
+        /*if('_del_blank_doc'==arg){
+            if(global.config.current=='default')
+                event.returnValue = '´íÎó£ºdefault²»¿ÉÉ¾³ý';
+            else
+                .docs.m
+        }
+        else{*/
+            util.saveLocal(arg);
+		//if (global.config.fileName) {
+			let content = util.readMd();//readFile(global.config.fileName);
 			if (arg === content) {
 				global.notSave = false;
-				mainWindow.setTitle('Markdown Editor - ' + global.config.fileName);
+				mainWindow.setTitle('Markdown Editor - ' + global.config.currentName);
 			} else {
-				global.notSave = true;
-				mainWindow.setTitle('Markdown Editor - *' + global.config.fileName);
+				global.notSave = false;//true;
+				mainWindow.setTitle('Markdown Editor - *' + global.config.currentName);
 			}
-		} else {
-			global.notSave = true;
-			mainWindow.setTitle('Markdown Editor - *New File');
-		}
+		//} else {
+		//	global.notSave = true;
+		//	mainWindow.setTitle('Markdown Editor - *New File');
+		//}
+        //}
 	});
 
 	ipcMain.on('drag-open', (event, arg) => {
@@ -118,7 +130,7 @@ function serverReady(server) {
 			mainWindow.webContents.send('change-theme', global.config)
 		})
 		// Open the DevTools.
-		// mainWindow.webContents.openDevTools()
+		 mainWindow.webContents.openDevTools()
 
 		// Emitted when the window is closed.
 		mainWindow.on('closed', function () {
