@@ -71,7 +71,7 @@
 		    "list-ul", "list-ol", "hr", "|",
 		    "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "datetime", "html-entities", "pagebreak", "|",
 		    "goto-line", "watch", "preview", "clear", "search", "|",
-		    "help"
+		    "help","ds"
 		],
         full : [
             "undo", "redo", "|", 
@@ -1172,6 +1172,10 @@
                 {
                     menu += "<li class=\"divider\" unselectable=\"on\">|</li>";
                 }
+                else if (name === "ds")
+                {
+                    menu += "<li class=\"ds\"><a href=\"javascript:;\" title=\"DeepSeek\" unselectable=\"on\"><img style=\"height: 16px;\" src=\"images/dsi.png\"/></a></li>";
+                }
                 else
                 {
                     var isHeader = (/h(\d)/.test(name));
@@ -1274,6 +1278,9 @@
                 var name                = icon.attr("name");
                 var cursor              = cm.getCursor();
                 var selection           = cm.getSelection();
+                
+                if(!name && this.children.length &&this.children[0].localName=='img')
+                    name='ds';
 
                 if (name === "") {
                     return ;
@@ -3205,6 +3212,10 @@
         
         search : function() {
             this.search();
+        },
+
+        ds : function() {
+            ipcRenderer.send('deepseek-chat');
         },
 
         help : function() {
